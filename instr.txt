@@ -1,0 +1,74 @@
+1. Create sample Django app
+   1.1 python -m venv venv
+   1.2 source venv/bin/activate
+   1.3 pip install django==5.0.1
+   1.4 pip freeze > requirements.txt
+   1.5 django-admin startproject mysite .
+   1.6 python manage.py runserver
+
+   Create a landing page
+   1.7 python manage.py startapp homepage
+   1.8 modify mysite/settings.py
+       INSTALLED_APPS = [
+           'homepage.apps.HomepageConfig',
+
+   Write the first view
+   1.9 Create homepage/templates/homepage/index.html
+   1.10 in the homepage/views.py
+        add method index()
+   1.11 Create homepage/urls.py and write urlpatterns
+   1.12 point to the homepage app's urls module
+        path('', include('homepage.urls')),
+
+   Add a static file
+   1.13 homepage/static/homepage/render-banner.png
+   1.14 add to index.html the reference the downloaded image
+   1.15 python manage.py runserver
+
+   Add basic security
+   1.16 add SECRET_KEY at mysite/settings.py
+   1.17 Find the declaration of the DEBUG setting. This setting should never be set to True in a production environment. You can detect that you’re running on Render by checking for the presence of the RENDER environment variable in the application environment
+   1.18 When DEBUG is False, Django requires a suitable value for ALLOWED_HOSTS. You can get the name of your web service host from the RENDER_EXTERNAL_HOSTNAME environment variable, which is automatically set by Render.
+   
+   Add PostgreSQL support
+   1.19 pip install dj-database-url psycopg2-binary
+   1.20 pip freeze > requirements.txt
+   1.21 In mysite/settings.py, modify the declaration of the DATABASES setting
+        This connection string assumes that you have PostgreSQL running on localhost, 
+        on port 5432, 
+        with a database named mysite and 
+        a user named postgres with 
+        the password postgres
+   1.22 python manage.py migrate
+
+2. Update an existing Django project to make sure it is production-ready
+
+   Use a Render PostgreSQL database
+   2.1 pip install psycopg2-binary
+       pip install dj-database-url
+       pip freeze > requirements.txt
+   2.2 modify DATABASES at  mysite/settings.py
+
+   Set up static file serving
+   This module supports moving files from one place to another, relying on the end web server (such as Render’s default web server, or a tool like NGINX) to serve them to end users.
+   2.3 pip install 'whitenoise[brotli]'
+       pip freeze > requirements.txt
+   2.4 update middleware at mysite/settings.py
+       'whitenoise.middleware.WhiteNoiseMiddleware',
+   2.5 modify the section where static files are configured
+
+   Create a build script
+   2.6 build.sh
+   2.7 chmod a+x build.sh
+   2.8 pip install gunicorn uvicorn
+       pip freeze > requirements.txt
+   2.9 try running the project locally
+       python -m gunicorn mysite.asgi:application -k uvicorn.workers.UvicornWorker
+   2.10 Visit http://localhost:8000 in your browser to verify that your project is up and running.
+   
+3. Deploying to Render
+   Option 1: render.yaml
+
+   3.1 render.yaml
+   3.2 commit and push to the repository
+       git init
