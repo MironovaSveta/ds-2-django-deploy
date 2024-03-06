@@ -72,3 +72,10 @@
    3.1 render.yaml
    3.2 commit and push to the repository
        git init
+       commit changes
+       git remote add origin ...
+       git push -u origin master
+   3.3 In the Render Dashboard, go to the Blueprints page 
+       and click New Blueprint Instance.
+   3.4 Select the repository that contains your blueprint and click Connect.
+   3.5 Give your blueprint project a name and click Apply.
